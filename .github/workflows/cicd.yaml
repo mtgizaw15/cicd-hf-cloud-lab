@@ -1,0 +1,17 @@
+name: CI/CD Pipeline
+on: [push]
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Repository klónozása
+        uses: actions/checkout@v3
+
+      - name: Python környezet beállítása
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Teszt parancs futtatása
+        run: echo "CI/CD pipeline sikeresen fut!"

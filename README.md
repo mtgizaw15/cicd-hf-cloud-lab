@@ -6,4 +6,4 @@ Ez a repository a **Felhők hálózati szolgáltatásai laboratórium** tantárg
 A fejlesztés során a GitHub Actions segítségével egy automatikus **CI/CD pipeline** került kialakításra, amely a kód buildelését, tesztelését és később a deploy folyamatát támogatja.
 
 ## :white_check_mark: Workflow badge
-[![CI/CD Pipeline](https://github.com/mtgizaw15/cicd-hf-cloud-lab/actions/workflows/cicd.yml/badge.svg)](https://github.com/mtgizaw15/cicd-hf-cloud-lab/actions)
+[![Actions Status](https://github.com/mtgizaw15/cicd-hf-cloud-lab/actions/workflows/CI/CD%20Pipeline/badge.svg)](https://github.com/mtgizaw15/cicd-hf-cloud-lab/actions)
