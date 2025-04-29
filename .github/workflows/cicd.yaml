@@ -1,17 +1,32 @@
 name: CI/CD Pipeline
-on: [push]
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  DOCKERHUB_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+  DOCKERHUB_PASSWORD: ${{ secrets.DOCKER_KEY }}
+  IMAGE_NAME: hf-faceapp
+
 jobs:
-  setup:
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
       - name: Repository klónozása
         uses: actions/checkout@v3
 
-      - name: Python környezet beállítása
-        uses: actions/setup-python@v4
+      - name: Bejelentkezés DockerHub-ra
+        uses: docker/login-action@v2
         with:
-          python-version: '3.10'
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ env.DOCKERHUB_PASSWORD }}
 
-      - name: Teszt parancs futtatása
-        run: echo "CI/CD pipeline sikeresen fut!"
+      - name: Docker image build
+        run: docker build -t ${{ env.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
+
+      - name: Docker image push
+        run: docker push ${{ env.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
