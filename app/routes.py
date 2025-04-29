@@ -1,0 +1,51 @@
+import os
+import json
+from flask import Blueprint, render_template, request, redirect, url_for
+from app.detector import detect_faces
+
+main = Blueprint('main', __name__)
+UPLOAD_FOLDER = os.path.join('static', 'uploads')
+
+@main.route('/', methods=['GET', 'POST'])
+def index():
+    metadata_file = os.path.join('static', 'uploads', 'descriptions.json')
+
+    if request.method == 'POST':
+        file = request.files['image']
+        description = request.form.get('description')
+
+        if file:
+            abs_upload_folder = os.path.join(os.getcwd(), UPLOAD_FOLDER)
+            if not os.path.exists(abs_upload_folder):
+                os.makedirs(abs_upload_folder)
+
+            filename = file.filename
+            filepath = os.path.join(abs_upload_folder, filename)
+            file.save(filepath)
+
+            detect_faces(filepath, filepath)
+
+            metadata = {}
+            if os.path.exists(metadata_file):
+                with open(metadata_file, 'r', encoding='utf-8') as f:
+                    metadata = json.load(f)
+
+            metadata[filename] = description
+            with open(metadata_file, 'w', encoding='utf-8') as f:
+                json.dump(metadata, f, indent=2, ensure_ascii=False)
+
+            return redirect(url_for('main.index'))
+
+    images = []
+    descriptions = {}
+    if os.path.exists(metadata_file):
+        with open(metadata_file, 'r', encoding='utf-8') as f:
+            descriptions = json.load(f)
+    
+    if os.path.exists(UPLOAD_FOLDER):
+        for fname in os.listdir(UPLOAD_FOLDER):
+            if fname.lower().endswith(('.jpg', '.jpeg', '.png')):
+                desc = descriptions.get(fname, "(nincs leírás)")
+                images.append((fname, desc))
+
+    return render_template('index.html', images=images)

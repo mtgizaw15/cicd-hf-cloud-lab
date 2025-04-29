@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ember detektálás</title>
+</head>
+<body>
+    <h1>Tölts fel egy képet</h1>
+    <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="image" required>
+        <br>
+        <textarea name="description" rows="2" cols="40" placeholder="Írd be a képhez tartozó leírást..." required></textarea>
+        <br>
+        <button type="submit">Feltöltés</button>
+    </form>
+
+    <h2>Feltöltött képek:</h2>
+    {% if images %}
+        {% for image, description in images %}
+            <div>
+                <img src="{{ url_for('static', filename='uploads/' + image) }}" width="300">
+                <p>{{ description }}</p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>Nincsenek feltöltött képek.</p>
+    {% endif %}
+</body>
+</html>
