@@ -1,6 +1,6 @@
 import os
 import json
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app.detector import detect_faces
 from app.send_email import send_email
 
@@ -44,6 +44,7 @@ def index():
             with open(metadata_file, 'w', encoding='utf-8') as f:
                 json.dump(metadata, f, indent=2, ensure_ascii=False)
 
+            flash('Sikeres kép feltöltés!')
             return redirect(url_for('main.index'))
 
     images = []
@@ -83,4 +84,24 @@ def subscribe():
     with open(subs_file, 'w') as f:
         json.dump(subscribers, f, indent=2)
 
+    flash('Sikeres feliratkozás az értesítésekre!')
+    return redirect(url_for('main.index'))
+
+@main.route('/delete/<filename>', methods=['POST'])
+def delete_image(filename):
+    filepath = os.path.join('static', 'uploads', filename)
+
+    if os.path.exists(filepath):
+        os.remove(filepath)
+
+    meta_file = os.path.join('static', 'uploads', 'descriptions.json')
+    if os.path.exists(meta_file):
+        with open(meta_file, 'r') as f:
+            metadata = json.load(f)
+        if filename in metadata:
+            del metadata[filename]
+            with open(meta_file, 'w') as f:
+                json.dump(metadata, f, indent=2)
+
+    flash('Kép sikeresen törölve.')
     return redirect(url_for('main.index'))

@@ -6,6 +6,7 @@ def create_app():
         __name__,
         static_folder=os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'static'))
     )
+    app.secret_key = 'titkos-kulcs'
     
     from .routes import main
     app.register_blueprint(main)

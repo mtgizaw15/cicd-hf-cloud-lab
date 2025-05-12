@@ -1,33 +1,74 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hu">
 <head>
-    <meta charset="UTF-8">
-    <title>Ember detektálás</title>
+  <meta charset="UTF-8">
+  <title>Ember detektálás</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <h1>Iratkozz fel az oldalra és tölts fel egy képet</h1>
-    <form method="POST" action="/subscribe">
-        <input type="email" name="email" placeholder="Add meg az email címed..." required>
-        <button type="submit">Feliratkozás</button>
-    </form>
-    <form method="POST" enctype="multipart/form-data">
-        <input type="file" name="image" required>
-        <br>
-        <textarea name="description" rows="2" cols="40" placeholder="Írd be a képhez tartozó leírást..." required></textarea>
-        <br>
-        <button type="submit">Feltöltés</button>
+<body class="bg-light">
+
+  <div class="container mt-5">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ messages[0] }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Bezárás"></button>
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <h1 class="mb-4 text-center">Iratkozz fel az oldalra és tölts fel egy képet</h1>
+
+    <form method="POST" action="/subscribe" class="row g-3 mb-4">
+      <div class="col-md-10">
+        <input type="email" name="email" class="form-control" placeholder="Add meg az email címed..." required>
+      </div>
+      <div class="col-md-2 d-grid">
+        <button type="submit" class="btn btn-primary">Feliratkozás</button>
+      </div>
     </form>
 
-    <h2>Feltöltött képek:</h2>
-    {% if images %}
+    <form method="POST" enctype="multipart/form-data" class="mb-5">
+      <div class="mb-3">
+        <input type="file" name="image" class="form-control" required>
+      </div>
+      <div class="mb-3">
+        <textarea name="description" class="form-control" rows="2" placeholder="Írd be a képhez tartozó leírást..." required></textarea>
+      </div>
+      <button type="submit" class="btn btn-success">Feltöltés</button>
+    </form>
+
+    <h2 class="mb-3">Feltöltött képek:</h2>
+    <div class="row">
+      {% if images %}
         {% for image, description in images %}
-            <div>
-                <img src="{{ url_for('static', filename='uploads/' + image) }}" width="300">
-                <p>{{ description }}</p>
+          <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+              <img src="{{ url_for('static', filename='uploads/' + image) }}" class="card-img-top" alt="Kép">
+              <div class="card-body">
+                <p class="card-text">{{ description }}</p>
+                <form method="POST" action="/delete/{{ image }}">
+                  <button type="submit" class="btn btn-danger btn-sm mt-2">Törlés</button>
+                </form>
+              </div>
             </div>
+          </div>
         {% endfor %}
-    {% else %}
+      {% else %}
         <p>Nincsenek feltöltött képek.</p>
-    {% endif %}
+      {% endif %}
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    setTimeout(() => {
+      const alertBox = document.querySelector('.alert');
+      if (alertBox) {
+        alertBox.classList.remove('show');
+        alertBox.classList.add('hide');
+      }
+    }, 3000);
+  </script>
 </body>
 </html>
