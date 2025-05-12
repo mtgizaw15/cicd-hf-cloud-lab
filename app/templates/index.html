@@ -5,7 +5,11 @@
     <title>Ember detektálás</title>
 </head>
 <body>
-    <h1>Tölts fel egy képet</h1>
+    <h1>Iratkozz fel az oldalra és tölts fel egy képet</h1>
+    <form method="POST" action="/subscribe">
+        <input type="email" name="email" placeholder="Add meg az email címed..." required>
+        <button type="submit">Feliratkozás</button>
+    </form>
     <form method="POST" enctype="multipart/form-data">
         <input type="file" name="image" required>
         <br>
