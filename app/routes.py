@@ -69,6 +69,10 @@ def subscribe():
     subs_file = os.path.join('static', 'uploads', 'subscribers.json')
     subscribers = []
 
+    upload_dir = os.path.dirname(subs_file)
+    if not os.path.exists(upload_dir):
+        os.makedirs(upload_dir)
+
     if os.path.exists(subs_file):
         with open(subs_file, 'r') as f:
             subscribers = json.load(f)
