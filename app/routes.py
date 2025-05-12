@@ -40,7 +40,10 @@ def index():
                 with open(metadata_file, 'r', encoding='utf-8') as f:
                     metadata = json.load(f)
 
-            metadata[filename] = description
+            metadata[filename] = {
+                "description": description,
+                "faces": detected_count
+            }
             with open(metadata_file, 'w', encoding='utf-8') as f:
                 json.dump(metadata, f, indent=2, ensure_ascii=False)
 
@@ -56,7 +59,12 @@ def index():
     if os.path.exists(UPLOAD_FOLDER):
         for fname in os.listdir(UPLOAD_FOLDER):
             if fname.lower().endswith(('.jpg', '.jpeg', '.png')):
-                desc = descriptions.get(fname, "(nincs leírás)")
+                info = descriptions.get(fname)
+                if isinstance(info, dict):
+                    desc = info.get("description", "(nincs leírás)")
+                else:
+                    desc = str(info)
+
                 images.append((fname, desc))
 
     return render_template('index.html', images=images)
@@ -83,6 +91,28 @@ def subscribe():
 
     with open(subs_file, 'w') as f:
         json.dump(subscribers, f, indent=2)
+
+    meta_file = os.path.join('static', 'uploads', 'descriptions.json')
+    if os.path.exists(meta_file):
+        with open(meta_file, 'r', encoding='utf-8') as f:
+            metadata = json.load(f)
+
+        messages = []
+        for fname, info in metadata.items():
+            if isinstance(info, dict):
+                desc = info.get("description", "")
+                faces = info.get("faces", "?")
+            else:
+                desc = str(info)
+                faces = "?"
+
+            messages.append(
+                f"Kép neve: {fname}\nLeírás: {desc}\nDetektált arcok száma: {faces}"
+            )
+
+        subject = "Eddigi feltöltött képek listája"
+        body = "\n\n".join(messages)
+        send_email([email], subject, body)
 
     flash('Sikeres feliratkozás az értesítésekre!')
     return redirect(url_for('main.index'))
