@@ -12,7 +12,7 @@ env:
   IMAGE_NAME: hf-faceapp
 
 jobs:
-  build-and-push:
+  build-push-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -30,3 +30,19 @@ jobs:
 
       - name: Docker image push
         run: docker push ${{ env.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+      - name: SSH Deploy (Docker run a távoli gépen)
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: localhost
+          username: user
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            docker stop hf-app || true
+            docker rm hf-app || true
+            docker pull ${{ env.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+            docker run -d --name hf-app -p 5000:5000 \
+              -e EMAIL_USER=${{ secrets.EMAIL_USER }} \
+              -e EMAIL_PASS="${{ secrets.EMAIL_PASS }}" \
+              ${{ env.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
