@@ -12,7 +12,7 @@ env:
   IMAGE_NAME: hf-faceapp
 
 jobs:
-  build-push-and-deploy:
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
@@ -31,18 +31,16 @@ jobs:
       - name: Docker image push
         run: docker push ${{ env.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
-      - name: SSH Deploy (Docker run a távoli gépen)
-        uses: appleboy/ssh-action@v1.0.0
+      - name: Save image as tar
+        run: |
+          docker save ${{ env.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }} > hf-faceapp.tar
+
+      - name: Upload to GitHub Release
+        uses: marvinpinto/action-automatic-releases@latest
         with:
-          host: localhost
-          username: user
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
-          script: |
-            docker stop hf-app || true
-            docker rm hf-app || true
-            docker pull ${{ env.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-            docker run -d --name hf-app -p 5000:5000 \
-              -e EMAIL_USER=${{ secrets.EMAIL_USER }} \
-              -e EMAIL_PASS="${{ secrets.EMAIL_PASS }}" \
-              ${{ env.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: false
+          title: "Latest Deployable Build"
+          files: |
+            hf-faceapp.tar
