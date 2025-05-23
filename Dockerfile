@@ -22,4 +22,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Flask szerver indítása
-CMD ["python", "run.py"]
+CMD ["python", "/run.py"]
