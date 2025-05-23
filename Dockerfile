@@ -12,15 +12,13 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Munkakönyvtár beállítása
-COPY run.py /app/
 WORKDIR /app
-
-# Követelmények másolása és telepítése
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
 
 # Projekt másolása a konténerbe
 COPY . .
+
+# Követelmények másolása és telepítése
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Flask szerver indítása
 CMD ["python", "run.py"]
