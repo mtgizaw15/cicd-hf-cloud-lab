@@ -1,0 +1,16 @@
+replicaCount: 1
+
+image:
+  repository: mtgizaw15/hf-faceapp
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+service:
+  type: ClusterIP
+  port: 5000
+
+env:
+  - name: EMAIL_USER
+    value: "mtgizaw15@gmail.com"
+  - name: EMAIL_PASS
+    value: "gqkz tjrb aacd qxkl"
