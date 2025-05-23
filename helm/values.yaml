@@ -3,7 +3,7 @@ replicaCount: 1
 image:
   repository: mtgizaw15/hf-faceapp
   pullPolicy: IfNotPresent
-  tag: "latest"
+  tag: "APP_VERSION"
 
 service:
   type: ClusterIP
